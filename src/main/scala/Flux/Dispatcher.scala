@@ -1,5 +1,7 @@
 package Flux
 
+import logger.Logger
+
 trait Action
 
 abstract class Dispatcher[A <: Action] {
@@ -35,10 +37,14 @@ object Sample {
     var store: Map[Int, String] = Map.empty
     sealed trait SampleAction extends Action
 
+    val logger = new Logger(println)
+
     final case class Add(key: Int, value: String) extends SampleAction
     final case class Remove(key: Int) extends SampleAction
 
-    final class SampleDispatcher extends Dispatcher[SampleAction]
+    final class SampleDispatcher extends Dispatcher[SampleAction] {
+      override def dispatch(a: SampleAction): Unit = logger.loggingWithTime { () => super.dispatch(a) }
+    }
 
     val dispatcher = new SampleDispatcher
 
